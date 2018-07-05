@@ -1,0 +1,53 @@
+# gem 'webpacker', github: 'rails/webpacker'
+gem 'webpacker', '~> 3.5'
+gem 'foreman'
+
+# nodejs
+  RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
+      apt-get install nodejs
+# yarn
+  RUN apt-get update && apt-get install -y curl apt-transport-https wget && \
+      curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+      echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+      apt-get update && apt-get install -y yarn
+
+bundle install
+docker-compose build
+
+bundle exec rails webpacker:install
+bundle exec rails webpacker:install:vue
+
+$ rails g controller Home index
+root to: 'home#index'
+// home/index.html.erb
+  <div id="app">
+    {{ message }}
+  </div>
+  <%= javascript_pack_tag 'hello_vue' %>
+// app/javascript/packs/xxx.js
+  import Vue from 'vue/dist/vue.esm'
+  var app = new Vue({
+    el: '#app',
+    data: {
+      message: 'Hello Vue!'
+    }
+  })
+
+//bin/server
+    #!/bin/bash -i
+    bundle install
+    bundle exec foreman start -f Procfile.dev
+//Procfile.dev
+    web: bundle exec rails s -p 3000 -b '0.0.0.0'
+    # watcher: ./bin/webpack-watcher
+    webpacker: ./bin/webpack-dev-server
+$ chmod 777 bin/server
+
+command: ./bin/server
+ports:
+  - 3000:3000
+  - 3035:3035
+  
+// config/webpacker.yml
+  dev_server:
+    host: 0.0.0.0
