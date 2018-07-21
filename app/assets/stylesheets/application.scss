@@ -1,2 +1,8 @@
 // Custom bootstrap variables must be set or imported *before* bootstrap.
-@import "bootstrap";
+// @import "bootstrap";
+
+@import "materialize/components/color-variables";
+$primary-color: color("teal", "accent-3") !default;
+$secondary-color: color("cyan", "base") !default;
+@import 'materialize';
+@import "https://fonts.googleapis.com/icon?family=Material+Icons";
